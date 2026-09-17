@@ -185,17 +185,17 @@ footer{border-top:1px solid var(--line); padding-top:14px; font-family:"IBM Plex
      stops:["moon","repub","rosc","giol","empor","navona","panth"],
      route:[["flat","moon","walk"],["moon","repub","metro"],["repub","rosc","walk"],["rosc","giol","walk"],["giol","empor","walk"],["empor","navona","walk"],["navona","panth","walk"],["panth","flat","taxi"]],
      legs:[["Lejligheden","Moonrise",0.65,"walk"],["Moonrise","Metro San Giovanni",0.40,"walk"],["Repubblica","mødestedet",0.15,"walk"],["Repubblica","Roscioli",1.60,"walk"],["Roscioli","Giolitti",0.85,"walk"],["Giolitti","Emporio Centrale",0.69,"walk"],["Emporio","Piazza Navona",0.35,"walk"],["Piazza Navona","Pantheon",0.30,"walk"],["Pantheon","aftensmaden",0.40,"walk"]],
-     note:"Pantheon-slottet blev 17.00, så dagen bliver i byen fra morgen til aften i stedet for en tur hjem imellem. Turens længste dag i timer — ude 08.30 til omkring 22 — men kun 5,4 km, for det meste af den sidder I ned: golfvogn, frokost, café, middag."},
+     note:"Pantheon-tidspunktet blev 17.00, så dagen bliver i byen fra morgen til aften i stedet for en tur hjem imellem. Turens længste dag i timer — ude 08.30 til omkring 22 — men kun 5,4 km, for det meste af den sidder I ned: golfvogn, frokost, café, middag."},
     {id:"man", label:"Man 21/9", title:"Antikken om eftermiddagen", km:8.20,
      stops:["regoli","colos","palat","forum","jewel","mizio"],
      route:[["flat","regoli","metro"],["regoli","flat","metro"],["flat","colos","tram"],["colos","jewel","walk"],["jewel","colos","walk"],["colos","palat","walk"],["palat","forum","walk"],["forum","jewel","walk"],["jewel","mizio","walk"],["mizio","flat","tram"]],
      legs:[["Lejligheden","Regoli og retur",1.40,"walk"],["Colosseo","frokost i Monti",0.80,"walk"],["Monti","Colosseum",0.80,"walk"],["Colosseum","Palatinerhøjen",0.40,"walk"],["Palatinerhøjen","rundt deroppe",1.20,"walk"],["Palatinerhøjen","Forum Romanum",0.50,"walk"],["Forum","rundt dernede",1.00,"walk"],["Forum","The Jewelry Bar",0.90,"walk"],["Jewelry Bar","Mizio's",0.30,"walk"],["Mizio's","Colosseo",0.90,"walk"]],
-     note:"Colosseum-slottet blev 13.15, så formiddagen er fri — den bruges på maritozzo hos Regoli, to metrostop væk. Palatinerhøjen tages før Forum, fordi den har skygge. Aftenen bliver i Monti, ti minutter fra Forums udgang."},
+     note:"Colosseum-tidspunktet blev 13.15, så formiddagen er fri — den bruges på maritozzo hos Regoli, to metrostop væk. Palatinerhøjen tages før Forum, fordi den har skygge. Aftenen bliver i Monti, ti minutter fra Forums udgang."},
     {id:"tir", label:"Tir 22/9", title:"Testaccio og Tridente", km:7.25,
      stops:["linari","testac","krypt","trevi","cucina","castr","spagna","pincio","seph","dagino"],
      route:[["flat","linari","tram"],["linari","testac","walk"],["testac","flat","tram"],["flat","krypt","metro"],["krypt","trevi","walk"],["trevi","cucina","walk"],["cucina","castr","walk"],["castr","spagna","walk"],["spagna","pincio","walk"],["pincio","seph","walk"],["seph","dagino","walk"],["dagino","flat","metro"]],
      legs:[["Sporvognen","Linari",0.30,"walk"],["Linari","Testaccio Market",0.27,"walk"],["Testaccio","rundt på markedet",0.80,"walk"],["Testaccio","sporvognen",0.40,"walk"],["Barberini","Kapucinerkrypten",0.30,"walk"],["Krypten","Trevi",0.72,"walk"],["Trevi","c.u.c.i.n.a.",0.77,"walk"],["c.u.c.i.n.a.","Castroni",0.37,"walk"],["Castroni","Spanske Trapper",0.39,"walk"],["Spanske Trapper","Pincio",0.86,"walk"],["Pincio","Sephora",0.76,"walk"],["Sephora","Da Gino",0.61,"walk"],["Da Gino","Metro Spagna",0.70,"walk"]],
-     note:"Ugens længste dag til fods, og den varmeste. Men eftermiddagsruten fra krypten til Da Gino er én sammenhængende gåtur nordpå — ingen skift undervejs."},
+     note:"Ugens varmeste dag, og den næstlængste til fods efter mandag. Men eftermiddagsruten fra krypten til Da Gino er én sammenhængende gåtur nordpå — ingen skift undervejs."},
     {id:"ons", label:"Ons 23/9", title:"Trastevere og hjem", km:5.52,
      stops:["campo","corom","sisto","smaria","sparita"],
      route:[["flat","campo","taxi"],["campo","corom","walk"],["corom","campo","walk"],["campo","sisto","walk"],["sisto","smaria","walk"],["smaria","sparita","walk"],["sparita","campo","walk"]],
@@ -340,7 +340,7 @@ footer{border-top:1px solid var(--line); padding-top:14px; font-family:"IBM Plex
         legsEl.appendChild(row);
       });
       addSum([["Dage i byen","5"],["Stop i alt",String(DAYS.reduce(function(a,d){return a+d.stops.length;},0))],["Længste dag","8,20 km"],["Korteste dag","0,30 km"],["Gennemsnit","6,0 km/dag"]]);
-      sumNote.textContent="Fem af seks dage er reelle bydage. Mandag og tirsdag er de tungeste med 8,2 og 7,3 km. Søndag er den længste i timer, men ikke i kilometer. Mandag voksede, da Colosseum-slottet blev 13.15 og turen hjem midt på dagen forsvandt — til gengæld er hele dagen nu én sammenhængende bevægelse.";
+      sumNote.textContent="Fem af seks dage er reelle bydage. Mandag og tirsdag er de tungeste med 8,2 og 7,3 km. Søndag er den længste i timer, men ikke i kilometer. Mandag voksede, da Colosseum-tidspunktet blev 13.15 og turen hjem midt på dagen forsvandt — til gengæld er hele dagen nu én sammenhængende bevægelse.";
       return;
     }
     var d=DAYS.filter(function(x){return x.id===id;})[0];
