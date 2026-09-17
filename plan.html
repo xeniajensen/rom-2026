@@ -386,6 +386,19 @@ footer{
   .principle .n{padding-top:0}
   .plain li{grid-template-columns:1fr;gap:2px}
 }
+
+/* ---------- i dag ---------- */
+.day{scroll-margin-top:64px}
+.day.is-today{border-color:var(--accent)}
+.day.is-today .day-head{background:var(--accent-soft)}
+.badge-today{font-family:var(--f-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);border:1px solid currentColor;border-radius:3px;padding:1px 6px}
+.daynav a.is-today{border-color:var(--accent);color:var(--accent);font-weight:600}
+.slot.is-now{position:relative;background:var(--accent-soft)}
+.slot.is-now::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.slot.is-now .t{color:var(--accent);font-weight:500}
+.slot.is-now .b strong::after{content:" \2190 nu";font-family:var(--f-data);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:400}
 </style>
 </head>
 <body>
@@ -647,6 +660,44 @@ footer{
   </footer>
 
 </div>
+
+
+<script>
+(function(){
+  try{
+    var DAYS={"2026-09-18":"fre","2026-09-19":"lor","2026-09-20":"son",
+              "2026-09-21":"man","2026-09-22":"tir","2026-09-23":"ons"};
+    var now=new Date(), TZ="Europe/Rome";
+    var key=new Intl.DateTimeFormat("sv-SE",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(now);
+    var id=DAYS[key]; if(!id) return;
+    var art=document.getElementById(id); if(!art) return;
+
+    art.classList.add("is-today");
+    var meta=art.querySelector(".day-meta");
+    if(meta){var b=document.createElement("span");b.className="badge-today";b.textContent="I dag";meta.insertBefore(b,meta.firstChild);}
+    var link=document.querySelector('.daynav a[href="#'+id+'"]');
+    if(link) link.classList.add("is-today");
+
+    var hm=new Intl.DateTimeFormat("sv-SE",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:false}).format(now).split(":");
+    var mins=parseInt(hm[0],10)*60+parseInt(hm[1],10);
+    var current=null;
+    Array.prototype.forEach.call(art.querySelectorAll(".slot"),function(s){
+      var el=s.querySelector(".t"); if(!el) return;
+      var m=/^(\d{1,2})\.(\d{2})$/.exec(el.textContent.trim()); if(!m) return;
+      if(parseInt(m[1],10)*60+parseInt(m[2],10)<=mins) current=s;
+    });
+    if(current) current.classList.add("is-now");
+
+    if(!location.hash){
+      var target=current||art;
+      var nav=document.querySelector(".daynav");
+      var off=(nav?nav.getBoundingClientRect().height:0)+(current?80:12);
+      var y=target.getBoundingClientRect().top+window.pageYOffset-off;
+      window.scrollTo(0,Math.max(0,y));
+    }
+  }catch(e){}
+})();
+</script>
 
 </body>
 </html>
