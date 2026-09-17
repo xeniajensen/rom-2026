@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Rom dag for dag</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --paper:#EDF0EE; --panel:#F6F8F6; --ink:#161B19; --ink-2:#4A5450; --ink-3:#78837E;
+  --line:#CBD3CE; --line-2:#DDE3DF;
+  --water:#A8C0BA; --park:#CBD7C3; --ruin:#DED4C0; --built:#E3E7E4;
+  --d-fre:#77838E; --d-lor:#0F7C74; --d-son:#BF7415; --d-man:#B03628; --d-tir:#65489A; --d-ons:#3A7637;
+  --shadow:0 1px 2px rgba(20,30,26,.08), 0 8px 24px -12px rgba(20,30,26,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111614; --panel:#182220; --ink:#E7ECE8; --ink-2:#A8B3AE; --ink-3:#77847F;
+    --line:#2C3A36; --line-2:#222E2B;
+    --water:#22403B; --park:#1D2B1D; --ruin:#2F2A20; --built:#1B2422;
+    --d-fre:#93A0AB; --d-lor:#22A79C; --d-son:#DE9435; --d-man:#D9584A; --d-tir:#9277C9; --d-ons:#55A251;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111614; --panel:#182220; --ink:#E7ECE8; --ink-2:#A8B3AE; --ink-3:#77847F;
+  --line:#2C3A36; --line-2:#222E2B;
+  --water:#22403B; --park:#1D2B1D; --ruin:#2F2A20; --built:#1B2422;
+  --d-fre:#93A0AB; --d-lor:#22A79C; --d-son:#DE9435; --d-man:#D9584A; --d-tir:#9277C9; --d-ons:#55A251;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  margin:0;
+}
+.wrap{max-width:1080px; margin:0 auto; padding-block:28px 56px; padding-left:18px; padding-right:18px;
+  display:flex; flex-direction:column; gap:22px;}
+
+/* ---------- masthead ---------- */
+.mast{display:flex; flex-wrap:wrap; align-items:flex-end; gap:14px 28px; border-bottom:1px solid var(--line); padding-bottom:16px}
+.mast h1{font-size:clamp(26px,4.4vw,38px); line-height:1.05; margin:0; font-weight:700; letter-spacing:-.02em; text-wrap:balance}
+.mast .sub{font-family:"Source Serif 4",Georgia,serif; color:var(--ink-2); font-size:15px; max-width:46ch; margin:6px 0 0}
+.tot{margin-left:auto; text-align:right; font-family:"IBM Plex Mono",ui-monospace,monospace}
+.tot b{display:block; font-size:30px; font-weight:500; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.tot span{font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-3)}
+
+/* ---------- day rail ---------- */
+.rail{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px}
+.chip{appearance:none; background:var(--panel); border:1px solid var(--line); border-radius:3px;
+  padding:10px 8px 9px; text-align:left; cursor:pointer; color:var(--ink); font-family:inherit;
+  display:flex; flex-direction:column; gap:3px; transition:border-color .15s, background .15s; position:relative; overflow:hidden}
+.chip::before{content:""; position:absolute; inset:0 auto 0 0; width:3px; background:var(--c,var(--line)); opacity:.5; transition:opacity .15s}
+.chip:hover{border-color:var(--ink-3)}
+.chip[aria-pressed="true"]{border-color:var(--ink); background:var(--paper)}
+.chip[aria-pressed="true"]::before{opacity:1}
+.chip .d{font-size:12px; font-weight:600; letter-spacing:.02em}
+.chip .k{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+.chip:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+
+/* ---------- map ---------- */
+.mapbox{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:4px; box-shadow:var(--shadow); overflow:hidden}
+svg.map{display:block; width:100%; height:auto; max-width:100%}
+.mlabel{font-family:"Archivo",sans-serif; font-size:13px; font-weight:600; fill:var(--ink-3); letter-spacing:.09em; text-transform:uppercase; pointer-events:none}
+.plabel{font-family:"IBM Plex Mono",monospace; font-size:12.5px; fill:var(--ink); pointer-events:none; paint-order:stroke; stroke:var(--panel); stroke-width:3.5px; stroke-linejoin:round}
+.stopnum{font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500; fill:var(--panel); pointer-events:none; text-anchor:middle; dominant-baseline:central}
+.day-g{transition:opacity .25s}
+.day-g.dim{opacity:.07}
+
+.inset{position:absolute; left:12px; bottom:12px; width:min(230px,42%); background:var(--paper); border:1px solid var(--line); border-radius:3px; padding:8px 10px 9px}
+.inset h4{margin:0 0 6px; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
+.inset svg{display:block; width:100%; height:auto}
+
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; align-items:center; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-2)}
+.legend i{display:inline-block; width:22px; height:0; border-top:2.5px solid currentColor; vertical-align:middle; margin-right:6px}
+.legend i.dash{border-top-style:dashed; border-top-width:2px}
+
+/* ---------- detail ---------- */
+.detail{display:grid; grid-template-columns:1.35fr 1fr; gap:22px; align-items:start}
+.legs{border-top:1px solid var(--line)}
+.leg{display:grid; grid-template-columns:22px 1fr auto; gap:12px; align-items:baseline; padding:9px 2px; border-bottom:1px solid var(--line-2)}
+.leg .n{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+.leg .t{font-size:14px}
+.leg .t em{font-style:normal; color:var(--ink-3)}
+.leg .m{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.sum{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:16px 18px}
+.sum h3{margin:0 0 10px; font-size:13px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
+.sum dl{margin:0; display:grid; grid-template-columns:1fr auto; gap:7px 14px; font-size:14px}
+.sum dt{color:var(--ink-2)}
+.sum dd{margin:0; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; text-align:right}
+.sum p{font-family:"Source Serif 4",Georgia,serif; font-size:14.5px; line-height:1.5; color:var(--ink-2); margin:14px 0 0; border-top:1px solid var(--line); padding-top:12px}
+
+footer{border-top:1px solid var(--line); padding-top:14px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3); line-height:1.7}
+
+@media (max-width:760px){
+  .rail{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .detail{grid-template-columns:1fr}
+  .tot{margin-left:0; text-align:left}
+  .inset{position:static; width:auto; margin:10px; border:none; border-top:1px solid var(--line); border-radius:0; padding:10px 0 0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <h1>Rom dag for dag</h1>
+      <p class="sub">Hvor I faktisk bevæger jer hen den 18.–23. september, og hvor langt der er til fods mellem stoppene.</p>
+    </div>
+    <div class="tot"><b id="totKm">30,1</b><span id="totLbl">km til fods i alt</span></div>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Vælg dag"></nav>
+
+  <div class="mapbox">
+    <svg class="map" id="map" viewBox="0 0 1020 1010" role="img" aria-label="Kort over Rom med dagsruter"></svg>
+    <div class="inset">
+      <h4>Fiumicino · 25 km sydvest</h4>
+      <svg id="inset" viewBox="0 0 220 96" role="img" aria-label="Kort over Fiumicino"></svg>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span style="color:var(--ink-2)"><i></i>Til fods</span>
+    <span style="color:var(--ink-3)"><i class="dash"></i>Sporvogn, metro eller taxi</span>
+    <span style="color:var(--ink-3)">Tal i nålen = rækkefølge på dagen</span>
+  </div>
+
+  <section class="detail">
+    <div>
+      <div class="legs" id="legs"></div>
+    </div>
+    <aside class="sum">
+      <h3 id="sumTitle">Hele turen</h3>
+      <dl id="sumList"></dl>
+      <p id="sumNote"></p>
+    </aside>
+  </section>
+
+  <footer>
+    Gå-afstande er Wanderlogs mål mellem de enkelte stop, lagt sammen og suppleret med et skøn for det, man går <em>inde</em> på Forum, Palatinerhøjen og markederne. Transport med sporvogn 3, metro A og C samt taxi er ikke talt med. Placeringerne er sat efter adresse og er præcise nok til overblik, ikke til navigation.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var P = {
+    flat:[41.8800,12.5140,"Lejligheden"], moon:[41.8806,12.5152,"Moonrise Café"],
+    conad:[41.8797,12.5180,"Conad"], later:[41.8858,12.5059,"Laterankirken"],
+    repub:[41.9028,12.4953,"Piazza della Repubblica"], rosc:[41.8948,12.4732,"Antico Forno Roscioli"],
+    panth:[41.8986,12.4769,"Pantheon"], giol:[41.9003,12.4779,"Giolitti"],
+    empor:[41.8970,12.4745,"Emporio Centrale"], navona:[41.8992,12.4731,"Piazza Navona"],
+    colos:[41.8902,12.4922,"Colosseum"], forum:[41.8925,12.4853,"Forum Romanum"],
+    palat:[41.8892,12.4875,"Palatinerhøjen"], regoli:[41.8944,12.5012,"Regoli"],
+    jewel:[41.8950,12.4932,"The Jewelry Bar"], mizio:[41.8942,12.4908,"Mizio's"],
+    linari:[41.8763,12.4749,"Pasticceria Linari"], testac:[41.8757,12.4748,"Testaccio Market"],
+    krypt:[41.9047,12.4886,"Kapucinerkrypten"], trevi:[41.9009,12.4833,"Trevi"],
+    cucina:[41.9047,12.4806,"c.u.c.i.n.a."], castr:[41.9040,12.4800,"Castroni"],
+    spagna:[41.9058,12.4823,"Spanske Trapper"], pincio:[41.9110,12.4772,"Pincio"],
+    seph:[41.9072,12.4772,"Sephora"], dagino:[41.9022,12.4774,"Da Gino"],
+    campo:[41.8956,12.4722,"Campo de' Fiori"], corom:[41.8996,12.4682,"Coromandel"],
+    sisto:[41.8931,12.4705,"Ponte Sisto"], smaria:[41.8893,12.4696,"Santa Maria in Trastevere"],
+    sparita:[41.8874,12.4768,"Roma Sparita"], pompi:[41.8804,12.5137,"Pompi"], favilla:[41.8836,12.5129,"Favilla"]
+  };
+
+  var DAYS = [
+    {id:"fre", label:"Fre 18/9", title:"Ankomst", km:0.3, stops:[], route:[], off:"Lander i FCO 20.45 og bliver i Fiumicino.",
+     legs:[["Terminal","hotel",0.30,"walk"]],
+     note:"Ingen bevægelse i Rom. I lander 20.45 og sover ved lufthavnen."},
+    {id:"lor", label:"L\u00f8r 19/9", title:"Flytning og hjemmebane", km:3.40,
+     stops:["later","pompi","conad","favilla"],
+     route:[["flat","later","walk"],["later","pompi","walk"],["pompi","conad","walk"],["conad","flat","walk"],["flat","favilla","walk"],["favilla","flat","walk"]],
+     legs:[["Lejligheden","Laterankirken",0.80,"walk"],["Laterankirken","Pompi",1.10,"walk"],["Pompi","Conad",0.05,"walk"],["Conad","Lejligheden",0.55,"walk"],["Lejligheden","Favilla",0.45,"walk"],["Favilla","Lejligheden",0.45,"walk"]],
+     note:"Formiddagen g\u00e5r i Fiumicino \u2014 check-in er f\u00f8rst kl. 15. Hele resten af dagen ligger inden for et kvarters gang: kirken, Pompi og Conad om eftermiddagen, aftensmad p\u00e5 Via Urbino. Ingen billetter, ingen transport."},
+    {id:"son", label:"Søn 20/9", title:"Én lang dag i Centro Storico", km:5.40,
+     stops:["moon","repub","rosc","giol","empor","navona","panth"],
+     route:[["flat","moon","walk"],["moon","repub","metro"],["repub","rosc","walk"],["rosc","giol","walk"],["giol","empor","walk"],["empor","navona","walk"],["navona","panth","walk"],["panth","flat","taxi"]],
+     legs:[["Lejligheden","Moonrise",0.65,"walk"],["Moonrise","Metro San Giovanni",0.40,"walk"],["Repubblica","mødestedet",0.15,"walk"],["Repubblica","Roscioli",1.60,"walk"],["Roscioli","Giolitti",0.85,"walk"],["Giolitti","Emporio Centrale",0.69,"walk"],["Emporio","Piazza Navona",0.35,"walk"],["Piazza Navona","Pantheon",0.30,"walk"],["Pantheon","aftensmaden",0.40,"walk"]],
+     note:"Pantheon-slottet blev 17.00, så dagen bliver i byen fra morgen til aften i stedet for en tur hjem imellem. Turens længste dag i timer — ude 08.30 til omkring 22 — men kun 5,4 km, for det meste af den sidder I ned: golfvogn, frokost, café, middag."},
+    {id:"man", label:"Man 21/9", title:"Antikken om eftermiddagen", km:8.20,
+     stops:["regoli","colos","palat","forum","jewel","mizio"],
+     route:[["flat","regoli","metro"],["regoli","flat","metro"],["flat","colos","tram"],["colos","jewel","walk"],["jewel","colos","walk"],["colos","palat","walk"],["palat","forum","walk"],["forum","jewel","walk"],["jewel","mizio","walk"],["mizio","flat","tram"]],
+     legs:[["Lejligheden","Regoli og retur",1.40,"walk"],["Colosseo","frokost i Monti",0.80,"walk"],["Monti","Colosseum",0.80,"walk"],["Colosseum","Palatinerhøjen",0.40,"walk"],["Palatinerhøjen","rundt deroppe",1.20,"walk"],["Palatinerhøjen","Forum Romanum",0.50,"walk"],["Forum","rundt dernede",1.00,"walk"],["Forum","The Jewelry Bar",0.90,"walk"],["Jewelry Bar","Mizio's",0.30,"walk"],["Mizio's","Colosseo",0.90,"walk"]],
+     note:"Colosseum-slottet blev 13.15, så formiddagen er fri — den bruges på maritozzo hos Regoli, to metrostop væk. Palatinerhøjen tages før Forum, fordi den har skygge. Aftenen bliver i Monti, ti minutter fra Forums udgang."},
+    {id:"tir", label:"Tir 22/9", title:"Testaccio og Tridente", km:7.25,
+     stops:["linari","testac","krypt","trevi","cucina","castr","spagna","pincio","seph","dagino"],
+     route:[["flat","linari","tram"],["linari","testac","walk"],["testac","flat","tram"],["flat","krypt","metro"],["krypt","trevi","walk"],["trevi","cucina","walk"],["cucina","castr","walk"],["castr","spagna","walk"],["spagna","pincio","walk"],["pincio","seph","walk"],["seph","dagino","walk"],["dagino","flat","metro"]],
+     legs:[["Sporvognen","Linari",0.30,"walk"],["Linari","Testaccio Market",0.27,"walk"],["Testaccio","rundt på markedet",0.80,"walk"],["Testaccio","sporvognen",0.40,"walk"],["Barberini","Kapucinerkrypten",0.30,"walk"],["Krypten","Trevi",0.72,"walk"],["Trevi","c.u.c.i.n.a.",0.77,"walk"],["c.u.c.i.n.a.","Castroni",0.37,"walk"],["Castroni","Spanske Trapper",0.39,"walk"],["Spanske Trapper","Pincio",0.86,"walk"],["Pincio","Sephora",0.76,"walk"],["Sephora","Da Gino",0.61,"walk"],["Da Gino","Metro Spagna",0.70,"walk"]],
+     note:"Ugens længste dag til fods, og den varmeste. Men eftermiddagsruten fra krypten til Da Gino er én sammenhængende gåtur nordpå — ingen skift undervejs."},
+    {id:"ons", label:"Ons 23/9", title:"Trastevere og hjem", km:5.52,
+     stops:["campo","corom","sisto","smaria","sparita"],
+     route:[["flat","campo","taxi"],["campo","corom","walk"],["corom","campo","walk"],["campo","sisto","walk"],["sisto","smaria","walk"],["smaria","sparita","walk"],["sparita","campo","walk"]],
+     legs:[["Bagagen","Coromandel",0.62,"walk"],["Coromandel","Campo de' Fiori",0.62,"walk"],["Campo","Ponte Sisto",0.45,"walk"],["Ponte Sisto","Santa Maria",0.40,"walk"],["Trastevere","sidegaderne",1.50,"walk"],["Santa Maria","Roma Sparita",0.73,"walk"],["Roma Sparita","bagagen",1.20,"walk"]],
+     note:"Ruten går én vej og vender tilbage til bagagen ved Campo de' Fiori. Derfor ligger depotet netop dér — midt i dagens sløjfe."}
+  ];
+
+  // ---- projection ----
+  var LON0=12.4600, LAT0=41.9160, S=0.1986, MX=111320*Math.cos(41.893*Math.PI/180), MY=110540;
+  function px(lon){ return (lon-LON0)*MX*S; }
+  function py(lat){ return (LAT0-lat)*MY*S; }
+  function xy(k){ var p=P[k]; return [px(p[1]), py(p[0])]; }
+
+  var NS="http://www.w3.org/2000/svg";
+  function el(n,a){ var e=document.createElementNS(NS,n); for(var k in a) e.setAttribute(k,a[k]); return e; }
+  function path(pts,close){ return pts.map(function(p,i){ return (i?"L":"M")+px(p[1]).toFixed(1)+" "+py(p[0]).toFixed(1); }).join(" ")+(close?" Z":""); }
+
+  var TIBER=[[41.9160,12.4695],[41.9120,12.4700],[41.9080,12.4690],[41.9040,12.4670],[41.9000,12.4652],[41.8965,12.4650],[41.8940,12.4668],[41.8925,12.4700],[41.8905,12.4735],[41.8885,12.4762],[41.8862,12.4782],[41.8830,12.4778],[41.8800,12.4762],[41.8760,12.4730],[41.8715,12.4698]];
+  var BORGHESE=[[41.9175,12.4755],[41.9168,12.4925],[41.9108,12.4935],[41.9082,12.4838],[41.9098,12.4758]];
+  var FORUMZONE=[[41.8948,12.4828],[41.8938,12.4905],[41.8878,12.4898],[41.8872,12.4838]];
+  var CIRCUS=[[41.8872,12.4822],[41.8866,12.4880],[41.8852,12.4878],[41.8858,12.4820]];
+
+  var DISTRICTS=[
+    [41.8985,12.4718,"Centro Storico"],[41.9060,12.4790,"Tridente"],[41.8952,12.4930,"Monti"],
+    [41.8888,12.4668,"Trastevere"],[41.8762,12.4772,"Testaccio"],[41.8830,12.5060,"San Giovanni"],
+    [41.8968,12.5040,"Esquilino"],[41.9138,12.4848,"Villa Borghese"]
+  ];
+
+  var map=document.getElementById("map");
+
+  function drawBase(){
+    map.appendChild(el("rect",{x:0,y:0,width:1020,height:1010,fill:"var(--paper)"}));
+    map.appendChild(el("path",{d:path(BORGHESE,true),fill:"var(--park)",stroke:"none"}));
+    map.appendChild(el("path",{d:path(FORUMZONE,true),fill:"var(--ruin)",stroke:"none"}));
+    map.appendChild(el("path",{d:path(CIRCUS,true),fill:"var(--ruin)",stroke:"none"}));
+    map.appendChild(el("path",{d:path(TIBER,false),fill:"none",stroke:"var(--water)","stroke-width":13,"stroke-linejoin":"round","stroke-linecap":"round"}));
+    DISTRICTS.forEach(function(d){
+      var t=el("text",{x:px(d[1]).toFixed(1),y:py(d[0]).toFixed(1),class:"mlabel","text-anchor":"middle"});
+      t.textContent=d[2]; map.appendChild(t);
+    });
+  }
+
+  var layer=el("g",{});
+  function strokeFor(mode,color){
+    if(mode==="walk") return {stroke:color,"stroke-width":3.6,"stroke-linecap":"round","stroke-linejoin":"round",fill:"none"};
+    return {stroke:color,"stroke-width":2.2,"stroke-dasharray":"7 7","stroke-linecap":"round",fill:"none",opacity:.5};
+  }
+
+  function drawDays(){
+    DAYS.forEach(function(d){
+      var g=el("g",{class:"day-g","data-day":d.id});
+      var c="var(--d-"+d.id+")";
+      d.route.forEach(function(r){
+        var a=xy(r[0]), b=xy(r[1]);
+        var at=strokeFor(r[2],c);
+        at.d="M"+a[0].toFixed(1)+" "+a[1].toFixed(1)+"L"+b[0].toFixed(1)+" "+b[1].toFixed(1);
+        g.appendChild(el("path",at));
+      });
+      d.stops.forEach(function(k,i){
+        var p=xy(k);
+        g.appendChild(el("circle",{cx:p[0].toFixed(1),cy:p[1].toFixed(1),r:10,fill:c,stroke:"var(--panel)","stroke-width":2}));
+        var n=el("text",{x:p[0].toFixed(1),y:p[1].toFixed(1),class:"stopnum"});
+        n.textContent=String(i+1); g.appendChild(n);
+        var t=el("text",{x:(p[0]+15).toFixed(1),y:(p[1]+4).toFixed(1),class:"plabel"});
+        t.textContent=P[k][2]; g.appendChild(t);
+      });
+      layer.appendChild(g);
+    });
+    map.appendChild(layer);
+    // home marker
+    var h=xy("flat");
+    var hg=el("g",{});
+    hg.appendChild(el("rect",{x:(h[0]-7).toFixed(1),y:(h[1]-7).toFixed(1),width:14,height:14,fill:"var(--ink)",transform:"rotate(45 "+h[0].toFixed(1)+" "+h[1].toFixed(1)+")"}));
+    var ht=el("text",{x:(h[0]+14).toFixed(1),y:(h[1]+4).toFixed(1),class:"plabel"});
+    ht.textContent="Lejligheden"; hg.appendChild(ht);
+    map.appendChild(hg);
+  }
+
+  function drawInset(){
+    var s=document.getElementById("inset");
+    var pts={fco:[36,30,"FCO"],hotel:[92,60,"Hotel"],parco:[174,78,"Parco Da Vinci"]};
+    s.appendChild(el("rect",{x:0,y:0,width:220,height:96,fill:"var(--paper)"}));
+    s.appendChild(el("path",{d:"M0 14 L220 6",stroke:"var(--water)","stroke-width":7,fill:"none",opacity:.8}));
+    [["fco","hotel","var(--d-fre)"],["hotel","parco","var(--d-lor)"]].forEach(function(r){
+      var a=pts[r[0]],b=pts[r[1]];
+      s.appendChild(el("path",{d:"M"+a[0]+" "+a[1]+"L"+b[0]+" "+b[1],stroke:r[2],"stroke-width":2,"stroke-dasharray":"5 5",fill:"none"}));
+    });
+    Object.keys(pts).forEach(function(k){
+      var p=pts[k];
+      s.appendChild(el("circle",{cx:p[0],cy:p[1],r:4.5,fill:"var(--ink-2)"}));
+      var t=el("text",{x:p[0]+8,y:p[1]+4,class:"plabel"});
+      t.setAttribute("style","font-size:11px"); t.textContent=p[2]; s.appendChild(t);
+    });
+  }
+
+  // ---- UI ----
+  var rail=document.getElementById("rail"), legsEl=document.getElementById("legs"),
+      sumTitle=document.getElementById("sumTitle"), sumList=document.getElementById("sumList"),
+      sumNote=document.getElementById("sumNote"), totKm=document.getElementById("totKm"), totLbl=document.getElementById("totLbl");
+  var current="all";
+
+  function fmt(n){ return n.toFixed(n<10?2:1).replace(".",","); }
+
+  function mkChip(id,label,km){
+    var b=document.createElement("button");
+    b.className="chip"; b.type="button"; b.id="chip-"+id; b.setAttribute("aria-pressed", id===current?"true":"false");
+    if(id!=="all") b.style.setProperty("--c","var(--d-"+id+")"); else b.style.setProperty("--c","var(--ink)");
+    b.innerHTML='<span class="d"></span><span class="k"></span>';
+    b.querySelector(".d").textContent=label;
+    b.querySelector(".k").textContent=km;
+    b.addEventListener("click",function(){ select(id); });
+    return b;
+  }
+
+  function buildRail(){
+    var total=DAYS.reduce(function(a,d){return a+d.km;},0);
+    rail.appendChild(mkChip("all","Alle dage",fmt(total)+" km"));
+    DAYS.forEach(function(d){ rail.appendChild(mkChip(d.id,d.label,fmt(d.km)+" km")); });
+  }
+
+  function select(id){
+    current=id;
+    Array.prototype.forEach.call(rail.children,function(b){ b.setAttribute("aria-pressed", b.id==="chip-"+id ? "true":"false"); });
+    Array.prototype.forEach.call(layer.children,function(g){
+      g.classList.toggle("dim", id!=="all" && g.getAttribute("data-day")!==id);
+    });
+    render(id);
+  }
+
+  function render(id){
+    legsEl.innerHTML=""; sumList.innerHTML="";
+    if(id==="all"){
+      var total=DAYS.reduce(function(a,d){return a+d.km;},0);
+      totKm.textContent=fmt(total); totLbl.textContent="km til fods i alt";
+      sumTitle.textContent="Hele turen";
+      DAYS.forEach(function(d){
+        var row=document.createElement("div"); row.className="leg";
+        row.innerHTML='<span class="n"></span><span class="t"></span><span class="m"></span>';
+        row.querySelector(".n").textContent=d.label.split(" ")[0];
+        row.querySelector(".t").innerHTML="<strong>"+d.title+"</strong> <em>· "+(d.stops.length||"ingen")+" stop</em>";
+        row.querySelector(".m").textContent=fmt(d.km)+" km";
+        legsEl.appendChild(row);
+      });
+      addSum([["Dage i byen","5"],["Stop i alt",String(DAYS.reduce(function(a,d){return a+d.stops.length;},0))],["Længste dag","8,20 km"],["Korteste dag","0,30 km"],["Gennemsnit","6,0 km/dag"]]);
+      sumNote.textContent="Fem af seks dage er reelle bydage. Mandag og tirsdag er de tungeste med 8,2 og 7,3 km. Søndag er den længste i timer, men ikke i kilometer. Mandag voksede, da Colosseum-slottet blev 13.15 og turen hjem midt på dagen forsvandt — til gengæld er hele dagen nu én sammenhængende bevægelse.";
+      return;
+    }
+    var d=DAYS.filter(function(x){return x.id===id;})[0];
+    totKm.textContent=fmt(d.km); totLbl.textContent="km til fods · "+d.label;
+    sumTitle.textContent=d.title;
+    d.legs.forEach(function(l,i){
+      var row=document.createElement("div"); row.className="leg";
+      row.innerHTML='<span class="n"></span><span class="t"></span><span class="m"></span>';
+      row.querySelector(".n").textContent=String(i+1).padStart(2,"0");
+      row.querySelector(".t").innerHTML=l[0]+' <em>→</em> '+l[1];
+      row.querySelector(".m").textContent=fmt(l[2])+" km";
+      legsEl.appendChild(row);
+    });
+    var longest=d.legs.reduce(function(a,b){return b[2]>a[2]?b:a;},d.legs[0]);
+    addSum([["Stop på ruten",String(d.stops.length)],["Gå-ben",String(d.legs.length)],["Længste stræk",fmt(longest[2])+" km"],["I alt",fmt(d.km)+" km"]]);
+    sumNote.textContent=d.note;
+  }
+
+  function addSum(rows){
+    rows.forEach(function(r){
+      var dt=document.createElement("dt"); dt.textContent=r[0];
+      var dd=document.createElement("dd"); dd.textContent=r[1];
+      sumList.appendChild(dt); sumList.appendChild(dd);
+    });
+  }
+
+  drawBase(); drawDays(); drawInset(); buildRail(); select("all");
+})();
+</script>
+
+</body>
+</html>
