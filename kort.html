@@ -114,7 +114,7 @@ footer{border-top:1px solid var(--line); padding-top:14px; font-family:"IBM Plex
       <h1>Rom dag for dag</h1>
       <p class="sub">Hvor I faktisk bevæger jer hen den 18.–23. september, og hvor langt der er til fods mellem stoppene.</p>
     </div>
-    <div class="tot"><b id="totKm">30,8</b><span id="totLbl">km til fods i alt</span></div>
+    <div class="tot"><b id="totKm">30,1</b><span id="totLbl">km til fods i alt</span></div>
   </header>
   <p style="margin:14px 0 0"><a href="plan.html" style="font-size:14px;opacity:.7;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px">Planen time for time &rarr;</a> &nbsp;·&nbsp; <a href="./" style="font-size:14px;opacity:.7;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px">Forsiden</a></p>
 
@@ -169,18 +169,18 @@ footer{border-top:1px solid var(--line); padding-top:14px; font-family:"IBM Plex
     seph:[41.9072,12.4772,"Sephora"], dagino:[41.9022,12.4774,"Da Gino"],
     campo:[41.8956,12.4722,"Campo de' Fiori"], corom:[41.8996,12.4682,"Coromandel"],
     sisto:[41.8931,12.4705,"Ponte Sisto"], smaria:[41.8893,12.4696,"Santa Maria in Trastevere"],
-    sparita:[41.8874,12.4768,"Roma Sparita"], pompi:[41.8804,12.5137,"Pompi"], suppli:[41.8814,12.5134,"Frokost, Re di Roma"], favilla:[41.8836,12.5129,"Favilla"]
+    sparita:[41.8874,12.4768,"Roma Sparita"], pompi:[41.8804,12.5137,"Pompi"], favilla:[41.8836,12.5129,"Favilla"]
   };
 
   var DAYS = [
     {id:"fre", label:"Fre 18/9", title:"Ankomst", km:0.3, stops:[], route:[], off:"Lander i FCO 20.45 og bliver i Fiumicino.",
      legs:[["Terminal","hotel",0.30,"walk"]],
      note:"Ingen bevægelse i Rom. I lander 20.45 og sover ved lufthavnen."},
-    {id:"lor", label:"L\u00f8r 19/9", title:"Flytning og hjemmebane", km:4.25,
-     stops:["suppli","conad","later","favilla","pompi"],
-     route:[["flat","suppli","walk"],["suppli","conad","walk"],["conad","flat","walk"],["flat","later","walk"],["later","favilla","walk"],["favilla","pompi","walk"],["pompi","flat","walk"]],
-     legs:[["Lejligheden","frokost på Re di Roma",0.55,"walk"],["Frokost","Conad",0.35,"walk"],["Conad","Lejligheden",0.55,"walk"],["Lejligheden","Laterankirken",0.80,"walk"],["Laterankirken","Favilla",0.85,"walk"],["Favilla","Pompi",0.60,"walk"],["Pompi","Lejligheden",0.55,"walk"]],
-     note:"Formiddagen g\u00e5r i Fiumicino \u2014 check-in er f\u00f8rst kl. 15. Hele resten af dagen ligger inden for et kvarters gang: frokost og Conad p\u00e5 Re di Roma, kirken sidst p\u00e5 eftermiddagen, aftensmad p\u00e5 Via Urbino og Pompi bagefter. Ingen billetter, ingen transport."},
+    {id:"lor", label:"L\u00f8r 19/9", title:"Flytning og hjemmebane", km:3.55,
+     stops:["pompi","conad","later","favilla"],
+     route:[["flat","pompi","walk"],["pompi","conad","walk"],["conad","flat","walk"],["flat","later","walk"],["later","favilla","walk"],["favilla","flat","walk"]],
+     legs:[["Lejligheden","Pompi",0.55,"walk"],["Pompi","Conad",0.35,"walk"],["Conad","Lejligheden",0.55,"walk"],["Lejligheden","Laterankirken",0.80,"walk"],["Laterankirken","Favilla",0.85,"walk"],["Favilla","Lejligheden",0.45,"walk"]],
+     note:"Formiddagen g\u00e5r i Fiumicino \u2014 check-in er f\u00f8rst kl. 15. Hele resten af dagen ligger inden for et kvarters gang: Pompi og Conad p\u00e5 Re di Roma, kirken sidst p\u00e5 eftermiddagen, pizza p\u00e5 Via Urbino. Ingen billetter, ingen transport."},
     {id:"son", label:"Søn 20/9", title:"Én lang dag i Centro Storico", km:5.40,
      stops:["moon","repub","rosc","giol","empor","navona","panth"],
      route:[["flat","moon","walk"],["moon","repub","metro"],["repub","rosc","walk"],["rosc","giol","walk"],["giol","empor","walk"],["empor","navona","walk"],["navona","panth","walk"],["panth","flat","taxi"]],
@@ -339,7 +339,7 @@ footer{border-top:1px solid var(--line); padding-top:14px; font-family:"IBM Plex
         row.querySelector(".m").textContent=fmt(d.km)+" km";
         legsEl.appendChild(row);
       });
-      addSum([["Dage i byen","5"],["Stop i alt",String(DAYS.reduce(function(a,d){return a+d.stops.length;},0))],["Længste dag","8,20 km"],["Korteste dag","0,30 km"],["Gennemsnit","6,1 km/dag"]]);
+      addSum([["Dage i byen","5"],["Stop i alt",String(DAYS.reduce(function(a,d){return a+d.stops.length;},0))],["Længste dag","8,20 km"],["Korteste dag","0,30 km"],["Gennemsnit","6,0 km/dag"]]);
       sumNote.textContent="Fem af seks dage er reelle bydage. Mandag og tirsdag er de tungeste med 8,2 og 7,3 km. Søndag er den længste i timer, men ikke i kilometer. Mandag voksede, da Colosseum-tidspunktet blev 13.15 og turen hjem midt på dagen forsvandt — til gengæld er hele dagen nu én sammenhængende bevægelse.";
       return;
     }
